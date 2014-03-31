@@ -5,10 +5,12 @@
 
         Name:           SDI_lib.h
         Versionstring:  $VER: SDI_lib.h 1.9 (15.03.2009)
-        Author:         Jens Langner
+        Author:         Jens Maus
         Distribution:   PD
-        Project page:   http://www.sf.net/projects/sditools/
+        Project page:   http://sf.net/p/adtools/code/HEAD/tree/trunk/sdi/
         Description:    defines to hide OS specific library function definitions
+        Id:             $Id$
+        URL:            $URL$
 
  1.0   09.05.04 : initial version which allows to hide OS specific shared
                   library function definition like it has been introduced with
@@ -52,9 +54,9 @@
 ** (e.g. add your name or nick name).
 **
 ** Find the latest version of this file at:
-** http://cvs.sourceforge.net/viewcvs.py/sditools/sditools/headers/
+** http://sf.net/p/adtools/code/HEAD/tree/trunk/sdi/
 **
-** Jens Langner <Jens.Langner@light-speed.de> and
+** Jens Maus <mail@jens-maus.de>
 ** Dirk Stöcker <soft@dstoecker.de>
 */
 

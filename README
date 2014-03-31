@@ -1,7 +1,7 @@
 Short:        SDI headers - A set of C macro/defines to make amiga development easier.
 Kurz:         SDI Headers - Ein Bündel von C Makros/Defines um Amiga Entwicklungen einfacher zu machen
-Author:       Jens.Langner@light-speed.de (Jens Langner), soft@dstoecker.de (Dirk Stöcker)
-Uploader:     Jens.Langner@light-speed.de (Jens Langner)
+Author:       mail@jens-maus.de (Jens Maus), soft@dstoecker.de (Dirk Stöcker)
+Uploader:     mail@jens-maus.de (Jens Maus)
 Version:      1.6 (14.07.2005)
 Type:         dev/c
 Replaces:     dev/c/SDI_headers.lha
@@ -94,9 +94,9 @@ ARE THEY SERIOUSLY USED YET?
 Of course these headers are not only "theoretical stuff". In fact they are
 currently used in the following well-known Amiga-based projects:
 
-YAM (Yet Another Mailer)    - http://www.sf.net/projects/yamos
-NList MUI classes           - http://www.sf.net/projects/nlist-classes
-MUI (Magic User Interface)  - http://www.sasg.com/
+YAM (Yet Another Mailer)    - http://yam.ch/
+NList MUI classes           - http://sf.net/p/nlist-classes
+MUI (Magic User Interface)  - http://muidev.de/
 Freeciv (Amiga port)
 XAD library
 
@@ -105,6 +105,13 @@ XAD library
 So if you are interested in looking into "real" working source code and not
 only into the supplied example code, please feel free to have a look at
 the source code of the above projects (if it is freely available of course).
+
+UPDATES
+-------
+The latest brand of these headers can be viewed and downloaded from the
+following URL:
+
+  http://sf.net/p/adtools/code/HEAD/tree/trunk/sdi/
 
 COPYRIGHT
 ---------
@@ -120,5 +127,5 @@ AUTHORS
 -------
 The main/original authors of the SDI headers are:
 
-Jens Langner <Jens.Langner@light-speed.de>
+Jens Maus <mail@jens-maus.de>
 Dirk Stöcker <soft@dstoecker.de>
