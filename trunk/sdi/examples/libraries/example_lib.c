@@ -47,14 +47,14 @@
 #include <SDI_stdarg.h>
 
 #define VERSION		1
-#define REVISION	2
-#define DATE		  "21.06.2007"
-#define VERS		  "example.library 1.2"
-#define VSTRING		"example.library 1.2 21.06.2007)\r\n"
-#define VERSTAG		"\0$VER: example.library 1.2 (21.06.2007)"
+#define REVISION	3
+#define DATE        "01.04.2014"
+#define VERS        "example.library 1.3"
+#define VSTRING		"example.library 1.3 01.04.2014)\r\n"
+#define VERSTAG		"\0$VER: example.library 1.3 01.04.2014)"
 
 static const char UserLibName[] = "example.library";
-static const char UserLibID[]   = "\0$VER: example.library 1.2 (21.06.2007)";
+static const char UserLibID[]   = "\0$VER: example.library 1.3 01.04.2014)";
 
 #if defined(__MORPHOS__)
 struct ExecBase *SysBase;
@@ -67,81 +67,62 @@ struct ExecBase *SysBase;
 /*      compatibility over all common (OS3/OS4, MorphOS) is required          */
 /******************************************************************************/
 
+/******************************************************************************/
+/* Local Structures & Prototypes                                              */
+/******************************************************************************/
+
+struct LibraryHeader
+{
+  struct Library	libBase;
+  struct Library *sysBase;
+  ULONG           segList;
+};
+
+#if defined(__amigaos4__)
+#define __BASE_OR_IFACE_TYPE	struct ExampleIFace *
+#define __BASE_OR_IFACE_VAR		IExample
+#else
+#define __BASE_OR_IFACE_TYPE	struct LibraryHeader *
+#define __BASE_OR_IFACE_VAR		ExampleBase
+#endif
+#define __BASE_OR_IFACE			__BASE_OR_IFACE_TYPE __BASE_OR_IFACE_VAR
+
 // first the prototypes of all our public library functions
-LIBPROTO(SayHelloOS4, char *, void);
-LIBPROTO(SayHelloOS3, char *, void);
-LIBPROTO(SayHelloMOS, char *, void);
-LIBPROTO(Uppercase, char *, REG(a0, char *txt));
-LIBPROTOVA(SPrintf, char *, REG(a0, char *buf), REG(a1, char *format), ...);
+LIBPROTO(SayHelloOS4, char *, REG(a6, UNUSED __BASE_OR_IFACE));
+LIBPROTO(SayHelloOS3, char *, REG(a6, UNUSED __BASE_OR_IFACE));
+LIBPROTO(SayHelloMOS, char *, REG(a6, UNUSED __BASE_OR_IFACE));
+LIBPROTO(Uppercase, char *, REG(a6, UNUSED __BASE_OR_IFACE), REG(a0, char *txt));
+LIBPROTO(SPrintfA, char *, REG(a6, UNUSED __BASE_OR_IFACE), REG(a0, char *buf), REG(a1, char *format), REG(a2, APTR args));
+LIBPROTOVA(SPrintf, char *, REG(a6, UNUSED __BASE_OR_IFACE), REG(a0, char *buf), REG(a1, char *format), ...);
 
 // let us now create the libvector.
 // Please note that the start of the vectors has to be always the "LFUNC_FAS"
 // macro
-#define libvector LFUNC_FAS(SayHelloOS4)	\
-									LFUNC_FA_(SayHelloOS3)  \
-									LFUNC_FA_(SayHelloMOS)	\
-                  LFUNC_FA_(Uppercase)    \
+#define libvector LFUNC_FAS(SayHelloOS4) \
+                  LFUNC_FA_(SayHelloOS3) \
+                  LFUNC_FA_(SayHelloMOS) \
+                  LFUNC_FA_(Uppercase)   \
+                  LFUNC_FA_(SPrintfA)    \
                   LFUNC_VA_(SPrintf)
-
-// then we require to generate library stubs for each library functions
-// because OS4 comes with an additional "struct Interface*" parameter which we
-// want to keep transparent in our code. Therefore we need to have wrapper/stub
-// functions to call the real functions instead.
-#if defined(__amigaos4__)
-
-LIBPROTO(SayHelloOS4, char *)
-{
-	return SayHelloOS4();
-}
-
-LIBPROTO(SayHelloOS3, char *)
-{
-	return SayHelloOS3();
-}
-
-LIBPROTO(SayHelloMOS, char *)
-{
-	return SayHelloMOS();
-}
-
-LIBPROTO(Uppercase, char *, REG(a0, char *txt))
-{
-	return Uppercase(txt);
-}
-
-LIBPROTOVA(SPrintf, char *, REG(a0, char *buf), REG(a1, char *format), ...)
-{
-	char *ret;
-  va_list args;
-	va_startlinear(args, format);
-
-	ret = SPrintf(buf, format, va_getlinearva(args, ULONG));
-
-	va_end(args);
-
-	return(ret);
-}
-
-#endif
 
 // Now the real implementations of the library functions above like in
 // a normal AmigaOS shared library follow
-LIBFUNC char * SayHelloOS4()
+LIBPROTO(SayHelloOS4, char *, REG(a6, UNUSED __BASE_OR_IFACE))
 {
   return "Hello AmigaOS4!!!";
 }
 
-LIBFUNC char * SayHelloOS3()
+LIBPROTO(SayHelloOS3, char *, REG(a6, UNUSED __BASE_OR_IFACE))
 {
   return "Hello AmigaOS3!!!";
 }
 
-LIBFUNC char * SayHelloMOS()
+LIBPROTO(SayHelloMOS, char *, REG(a6, UNUSED __BASE_OR_IFACE))
 {
   return "Hello MorphOS!!!";
 }
 
-LIBFUNC char * Uppercase(REG(a0, char *txt))
+LIBPROTO(Uppercase, char *, REG(a6, UNUSED __BASE_OR_IFACE), REG(a0, char *txt))
 {
   char *p = txt;
 
@@ -154,16 +135,63 @@ LIBFUNC char * Uppercase(REG(a0, char *txt))
   return txt;
 }
 
-LIBFUNC char * STDARGS SPrintf(REG(a0, char *buf), REG(a1, char *fmt), ...)
+LIBPROTO(SPrintfA, char *, REG(a6, UNUSED __BASE_OR_IFACE), REG(a0, char *buf), REG(a1, char *format), REG(a2, APTR args))
 {
-	VA_LIST args;
+  RawDoFmt(fmt, args, NULL, buf);
 
-	VA_START(args, fmt);
-	RawDoFmt(fmt, VA_ARG(args, void *), NULL, buf);
-	VA_END(args);
-
-	return(buf);
+  return(buf);
 }
+
+#if defined(__amigaos4__)
+// for AmigaOS4 varargs functions are separate entries in the interface structure and
+// hence must be defined as separate functions
+LIBPROTOVA(SPrintf, char *, REG(a6, UNUSED __BASE_OR_IFACE), REG(a0, char *buf), REG(a1, char *format), ...)
+{
+  char *ret;
+  VA_LIST args;
+
+  VA_START(args, format);
+  // the SPrintf function will be call via the interface
+  ret = SPrintfA(buf, format, VA_ARG(args, ULONG));
+  VA_END(args);
+
+  return(ret);
+}
+#elif defined(__MORPHOS__)
+// define stub functions for all functions in the jump table which take the
+// parameters from the emulated 68k registers. The parameters don't need to
+// be specified again, because these are really functions taking no direct
+// parameters. Only the type of the returned value is required.
+LIBSTUB(SayHelloOS4, char *)
+{
+  __BASE_OR_IFACE = (__BASE_OR_IFACE_TYPE)REG_A6;
+  return CALL_LFUNC_NP(SayHelloOS4);
+}
+
+LIBSTUB(SayHelloOS3, char *)
+{
+  __BASE_OR_IFACE = (__BASE_OR_IFACE_TYPE)REG_A6;
+  return CALL_LFUNC_NP(SayHelloOS3);
+}
+
+LIBSTUB(SayHelloMOS, char *)
+{
+  __BASE_OR_IFACE = (__BASE_OR_IFACE_TYPE)REG_A6;
+  return CALL_LFUNC_NP(SayHelloMOS);
+}
+
+LIBSTUB(Uppercase, char *)
+{
+  __BASE_OR_IFACE = (__BASE_OR_IFACE_TYPE)REG_A6;
+  return CALL_LFUNC(Uppercase, (char *)REG_A0);
+}
+
+LIBSTUB(SPrintfA, char *)
+{
+  __BASE_OR_IFACE = (__BASE_OR_IFACE_TYPE)REG_A6;
+  return CALL_LFUNC(SprintfA, (char)REG_A0, (char *)REG_A1, (APTR)REG_A2);
+}
+#endif
 
 /******************************************************************************/
 /*    Starting from here starts the "standard" Amiga library initialization.  */
@@ -171,17 +199,6 @@ LIBFUNC char * STDARGS SPrintf(REG(a0, char *buf), REG(a1, char *fmt), ...)
 /*  SDI_lib.h header file and how it can help in developing a shared library  */
 /*               for multiple AmigaOS compatible platforms.                   */
 /******************************************************************************/
-
-/******************************************************************************/
-/* Local Structures & Prototypes                                              */
-/******************************************************************************/
-
-struct LibraryHeader
-{
-	struct Library	libBase;
-	struct Library *sysBase;
-	ULONG           segList;
-};
 
 #if defined(__amigaos4__)
 
@@ -269,28 +286,28 @@ STATIC CONST struct TagItem LibManagerTags[] =
 
 STATIC CONST APTR LibVectors[] =
 {
-   (APTR)LibObtain,
-   (APTR)LibRelease,
-	 (APTR)NULL,
-	 (APTR)NULL,
-	 (APTR)libvector,
-   (APTR)-1
+  (APTR)LibObtain,
+  (APTR)LibRelease,
+  (APTR)NULL,
+  (APTR)NULL,
+  (APTR)libvector,
+  (APTR)-1
 };
 
 STATIC CONST struct TagItem MainTags[] =
 {
-   {MIT_Name,              (ULONG)"main"},
-	 {MIT_VectorTable,       (ULONG)LibVectors},
-   {MIT_Version,           1},
-   {TAG_DONE,              0}
+  {MIT_Name,              (ULONG)"main"},
+  {MIT_VectorTable,       (ULONG)LibVectors},
+  {MIT_Version,           1},
+  {TAG_DONE,              0}
 };
 
 
 STATIC CONST ULONG LibInterfaces[] =
 {
-   (ULONG)LibManagerTags,
-   (ULONG)MainTags,
-   (ULONG)0
+  (ULONG)LibManagerTags,
+  (ULONG)MainTags,
+  (ULONG)0
 };
 
 /* --------------------- m68k Library stubs ------------------------ */
@@ -317,43 +334,104 @@ struct EmuTrap stub_Close = { TRAPINST, TRAPTYPE, stub_ClosePPC };
 
 STATIC ULONG stub_ExpungePPC(ULONG *regarray)
 {
-	return 0UL;
+  return 0UL;
 }
 struct EmuTrap stub_Expunge = { TRAPINST, TRAPTYPE, stub_ExpungePPC };
 
 STATIC ULONG stub_ReservedPPC(ULONG *regarray)
 {
-	return 0UL;
+  return 0UL;
 }
 struct EmuTrap stub_Reserved = { TRAPINST, TRAPTYPE, stub_ReservedPPC };
 
+STATIC ULONG stub_SayHelloOS4PPC(ULONG *regarray)
+{
+	struct Library *Base = (struct Library *) regarray[REG68K_A6/4];
+	struct ExtendedLibrary *ExtLib = (struct ExtendedLibrary *) ((ULONG)Base + Base->lib_PosSize);
+	struct LibraryManagerInterface *Self = (struct LibraryManagerInterface *) ExtLib->ILibrary;
+
+	return (char *)Self->SayHelloOS4();
+}
+struct EmuTrap stub_SayHelloOS4 = { TRAPINST, TRAPTYPE, stub_SayHelloOS4PPC };
+
+STATIC ULONG stub_SayHelloOS3PPC(ULONG *regarray)
+{
+	struct Library *Base = (struct Library *) regarray[REG68K_A6/4];
+	struct ExtendedLibrary *ExtLib = (struct ExtendedLibrary *) ((ULONG)Base + Base->lib_PosSize);
+	struct LibraryManagerInterface *Self = (struct LibraryManagerInterface *) ExtLib->ILibrary;
+
+	return (char *)Self->SayHelloOS3();
+}
+struct EmuTrap stub_SayHelloOS3 = { TRAPINST, TRAPTYPE, stub_SayHelloOS3PPC };
+
+STATIC ULONG stub_SayHelloMOSPPC(ULONG *regarray)
+{
+	struct Library *Base = (struct Library *) regarray[REG68K_A6/4];
+	struct ExtendedLibrary *ExtLib = (struct ExtendedLibrary *) ((ULONG)Base + Base->lib_PosSize);
+	struct LibraryManagerInterface *Self = (struct LibraryManagerInterface *) ExtLib->ILibrary;
+
+	return (char *)Self->SayHelloMOS();
+}
+struct EmuTrap stub_SayHelloMOS = { TRAPINST, TRAPTYPE, stub_SayHelloMOSPPC };
+
+STATIC ULONG stub_UppercasePPC(ULONG *regarray)
+{
+	struct Library *Base = (struct Library *) regarray[REG68K_A6/4];
+	struct ExtendedLibrary *ExtLib = (struct ExtendedLibrary *) ((ULONG)Base + Base->lib_PosSize);
+	struct LibraryManagerInterface *Self = (struct LibraryManagerInterface *) ExtLib->ILibrary;
+
+	return (char *)Self->Uppercase(
+		(char *)regarray[8]
+	);
+}
+struct EmuTrap stub_Uppercase = { TRAPINST, TRAPTYPE, stub_UppercasePPC };
+
+STATIC ULONG stub_SPrintfAPPC(ULONG *regarray)
+{
+	struct Library *Base = (struct Library *) regarray[REG68K_A6/4];
+	struct ExtendedLibrary *ExtLib = (struct ExtendedLibrary *) ((ULONG)Base + Base->lib_PosSize);
+	struct LibraryManagerInterface *Self = (struct LibraryManagerInterface *) ExtLib->ILibrary;
+
+	return (char *)Self->SPrintfA(
+		(char *)regarray[8],
+		(char *)regarray[9],
+		(APTR)regarray[10]
+	);
+}
+struct EmuTrap stub_SPrintfA = { TRAPINST, TRAPTYPE, stub_SPrintfAPPC };
+
 STATIC ULONG VecTable68K[] =
 {
-	(ULONG)&stub_Open,
-	(ULONG)&stub_Close,
-	(ULONG)&stub_Expunge,
-	(ULONG)&stub_Reserved,
-	(ULONG)-1
+  (ULONG)&stub_Open,
+  (ULONG)&stub_Close,
+  (ULONG)&stub_Expunge,
+  (ULONG)&stub_Reserved,
+  (ULONG)&stub_SayHelloOS4,
+  (ULONG)&stub_SayHelloOS3,
+  (ULONG)&stub_SayHelloMOS,
+  (ULONG)&stub_Uppercase,
+  (ULONG)&stub_SprintfA,
+  (ULONG)-1
 };
 
 /* ----------------------- LibCreate Tags -------------------------- */
 
 STATIC CONST struct TagItem LibCreateTags[] =
 {
-   {CLT_DataSize,   (ULONG)(sizeof(struct LibraryHeader))},
-   {CLT_InitFunc,   (ULONG)LibInit},
-   {CLT_Interfaces, (ULONG)LibInterfaces},
-   {CLT_Vector68K,  (ULONG)VecTable68K},
-   {TAG_DONE,       0}
+  {CLT_DataSize,   (ULONG)(sizeof(struct LibraryHeader))},
+  {CLT_InitFunc,   (ULONG)LibInit},
+  {CLT_Interfaces, (ULONG)LibInterfaces},
+  {CLT_Vector68K,  (ULONG)VecTable68K},
+  {TAG_DONE,       0}
 };
 
 #else
 
 STATIC CONST APTR LibVectors[] =
 {
-	#ifdef __MORPHOS__
-	(APTR)FUNCARRAY_32BIT_NATIVE,
-	#endif
+  #ifdef __MORPHOS__
+  (APTR)FUNCARRAY_32BIT_NATIVE,
+  #endif
   (APTR)LibOpen,
   (APTR)LibClose,
   (APTR)LibExpunge,
@@ -364,10 +442,10 @@ STATIC CONST APTR LibVectors[] =
 
 STATIC CONST ULONG LibInitTab[] =
 {
-	sizeof(struct LibraryHeader),
-	(ULONG)LibVectors,
-	(ULONG)NULL,
-	(ULONG)LibInit
+  sizeof(struct LibraryHeader),
+  (ULONG)LibVectors,
+  (ULONG)NULL,
+  (ULONG)LibInit
 };
 
 #endif
@@ -380,8 +458,8 @@ static const USED_VAR struct Resident ROMTag =
   (struct Resident *)&ROMTag + 1,
   #if defined(__amigaos4__)
   RTF_AUTOINIT|RTF_NATIVE,      // The Library should be set up according to the given table.
-	#elif defined(__MORPHOS__)
-	RTF_AUTOINIT|RTF_PPC,
+  #elif defined(__MORPHOS__)
+  RTF_AUTOINIT|RTF_PPC,
   #else
   RTF_AUTOINIT,
   #endif
@@ -487,11 +565,11 @@ static struct LibraryHeader *LibOpen(void)
 LIBFUNC static struct LibraryHeader * LibOpen(REG(a6, struct LibraryHeader *base))
 {
 #endif
-	
-  base->libBase.lib_Flags &= ~LIBF_DELEXP;
-	base->libBase.lib_OpenCnt++;
 
-	return base;
+  base->libBase.lib_Flags &= ~LIBF_DELEXP;
+  base->libBase.lib_OpenCnt++;
+
+  return base;
 }
 
 #if defined(__amigaos4__)
@@ -501,16 +579,16 @@ static BPTR LibClose(struct LibraryManagerInterface *Self)
 #elif defined(__MORPHOS__)
 static BPTR LibClose(void)
 {
-	struct LibraryHeader *base = (struct LibraryHeader *)REG_A6;
+  struct LibraryHeader *base = (struct LibraryHeader *)REG_A6;
 #else
 LIBFUNC static BPTR LibClose(REG(a6, struct LibraryHeader *base))
-{	
+{
 #endif
-	
+
   if(base->libBase.lib_OpenCnt > 0 &&
      --base->libBase.lib_OpenCnt == 0)
-	{
-		if(base->libBase.lib_Flags & LIBF_DELEXP)
+  {
+    if(base->libBase.lib_Flags & LIBF_DELEXP)
     {
       #if defined(__amigaos4__)
       return LibExpunge(Self);
@@ -520,7 +598,7 @@ LIBFUNC static BPTR LibClose(REG(a6, struct LibraryHeader *base))
       return LibExpunge(base);
       #endif
     }
-	}	
+  }
 
-	return 0;
+  return 0;
 }
