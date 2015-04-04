@@ -4,7 +4,7 @@
 /* Includeheader
 
         Name:           SDI_hook.h
-        Versionstring:  $VER: SDI_hook.h 1.26 (17.10.2012)
+        Versionstring:  $VER: SDI_hook.h 1.27 (04.04.2015)
         Authors:        Dirk Stoecker, Jens Maus
         Distribution:   PD
         Project page:   http://sf.net/p/adtools/code/HEAD/tree/trunk/sdi/
@@ -59,6 +59,8 @@
                   from m68k code. The function pointer must be passed with ENTRY().
  1.26  17.10.12 : added crosscall macros for functions with 1 and 2 parameters but
                   no return value.
+ 1.27  04.04.15 : fixed HOOKPROTO for vbcc (Fredrik Wikstrom)
+
 */
 
 /*
@@ -121,7 +123,7 @@
 ** The ENTRY macro, which also gets the function name as argument.
 */
 
-#if !defined(__AROS__) && (defined(_M68000) || defined(__M68000) || defined(__mc68000))
+#if !defined(__AROS__) && (defined(_M68000) || defined(__M68000) || defined(__mc68000) || defined(_M68K__))
   #define HOOKPROTO(name, ret, obj, param) static SAVEDS ASM ret             \
     name(REG(a0, struct Hook *hook), REG(a2, obj), REG(a1, param))
   #define HOOKPROTONO(name, ret, param) static SAVEDS ASM ret                \
