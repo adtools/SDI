@@ -7,7 +7,7 @@
         Versionstring:  $VER: SDI_stdarg.h 1.1 (06.06.2014)
         Author:         Jens Maus
         Distribution:   PD
-        Project page:   http://sf.net/p/adtools/code/HEAD/tree/trunk/sdi/
+        Project page:   https://github.com/adtools/SDI
         Description:    defines to hide OS specific variable arguments
                         function definitions
         Id:             $Id$
@@ -28,7 +28,7 @@
 ** (e.g. add your name or nick name).
 **
 ** Find the latest version of this file at:
-** http://sf.net/p/adtools/code/HEAD/tree/trunk/sdi/
+** https://github.com/adtools/SDI
 **
 ** Jens Maus <mail@jens-maus.de>
 ** Dirk Stöcker <soft@dstoecker.de>

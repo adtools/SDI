@@ -7,10 +7,8 @@
         Versionstring:  $VER: SDI_hook.h 1.27 (04.04.2015)
         Authors:        Dirk Stoecker, Jens Maus
         Distribution:   PD
-        Project page:   http://sf.net/p/adtools/code/HEAD/tree/trunk/sdi/
+        Project page:   https://github.com/adtools/SDI
         Description:    defines to hide compiler specific hook stuff
-        Id:             $Id$
-        URL:            $URL$
 
  1.0   21.06.02 : based on the work made for freeciv and YAM with
                   additional texts partly taken from YAM_hook.h changes made
@@ -73,7 +71,7 @@
 ** (e.g. add your name or nick name).
 **
 ** Find the latest version of this file at:
-** http://sf.net/p/adtools/code/HEAD/tree/trunk/sdi/
+** https://github.com/adtools/SDI
 **
 ** Jens Maus <mail@jens-maus.de>
 ** Dirk Stoecker <soft@dstoecker.de>

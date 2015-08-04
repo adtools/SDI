@@ -7,10 +7,8 @@
         Versionstring:  $VER: SDI_lib.h 1.12 (01.04.2014)
         Author:         Jens Maus
         Distribution:   PD
-        Project page:   http://sf.net/p/adtools/code/HEAD/tree/trunk/sdi/
+        Project page:   https://github.com/adtools/SDI
         Description:    defines to hide OS specific library function definitions
-        Id:             $Id$
-        URL:            $URL$
 
  1.0   09.05.04 : initial version which allows to hide OS specific shared
                   library function definition like it has been introduced with
@@ -55,7 +53,7 @@
 ** (e.g. add your name or nick name).
 **
 ** Find the latest version of this file at:
-** http://sf.net/p/adtools/code/HEAD/tree/trunk/sdi/
+** https://github.com/adtools/SDI
 **
 ** Jens Maus <mail@jens-maus.de>
 ** Dirk Stöcker <soft@dstoecker.de>

@@ -7,10 +7,8 @@
         Versionstring:  $VER: SDI_compiler.h 1.36 (30.03.2015)
         Authors:        Dirk Stoecker, Jens Maus
         Distribution:   PD
-        Project page:   http://sf.net/p/adtools/code/HEAD/tree/trunk/sdi/
+        Project page:   https://github.com/adtools/SDI
         Description:    defines to hide compiler stuff
-        Id:             $Id$
-        URL:            $URL$
 
  1.1   25.06.98 : created from data made by Gunter Nikl
  1.2   17.11.99 : added VBCC
@@ -76,7 +74,7 @@
 ** (e.g. add your name or nick name).
 **
 ** Find the latest version of this file at:
-** http://sf.net/p/adtools/code/HEAD/tree/trunk/sdi/
+** https://github.com/adtools/SDI
 **
 ** Jens Maus <mail@jens-maus.de>
 ** Dirk Stoecker <soft@dstoecker.de>
