@@ -4,7 +4,7 @@
 /* Includeheader
 
         Name:           SDI_lib.h
-        Versionstring:  $VER: SDI_lib.h 1.12 (01.04.2014)
+        Versionstring:  $VER: SDI_lib.h 1.13 (28.09.2015)
         Author:         Jens Maus
         Distribution:   PD
         Project page:   https://github.com/adtools/SDI
@@ -41,6 +41,7 @@
                   version (Thore Böckelmann)
  1.12  01.04.14 : removed the necessity of stub functions for AmigaOS4 (Thore
                   Böckelmann)
+ 1.13  28.09.15 : removed the exclusion of C++
 */
 
 /*
@@ -136,13 +137,9 @@
 
 #if defined(__amigaos4__)
   #define LIBFUNC
-  #if !defined(__cplusplus) &&                                        \
-    (__STDC_VERSION__ >= 199901L || __GNUC__ >= 3 ||                  \
-    (__GNUC__ == 2 && __GNUC_MINOR__ >= 95))
-    #define LIBPROTO(name, ret, ...)                                  \
-      LIBFUNC ret LIB_##name(__VA_ARGS__)
-    #define LIBPROTOVA(name, ret, ...)                                \
-      LIBFUNC ret VARARGS68K LIB_##name(__VA_ARGS__)
+  #if (__STDC_VERSION__ >= 199901L || __GNUC__ >= 3 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 95))
+    #define LIBPROTO(name, ret, ...) LIBFUNC ret LIB_##name(__VA_ARGS__)
+    #define LIBPROTOVA(name, ret, ...) LIBFUNC ret VARARGS68K LIB_##name(__VA_ARGS__)
     #define LIBSTUB(name, ret, ...)
     #define CALL_LFUNC_NP(name, ...) LIB_##name(__BASE_OR_IFACE_VAR)
     #define CALL_LFUNC(name, ...) LIB_##name(__BASE_OR_IFACE_VAR, __VA_ARGS__)
@@ -154,15 +151,10 @@
   #define LFUNC(name)     LIB_##name
 #elif defined(__MORPHOS__)
   #define LIBFUNC
-  #if !defined(__cplusplus) &&                                        \
-    (__STDC_VERSION__ >= 199901L || __GNUC__ >= 3 ||                  \
-    (__GNUC__ == 2 && __GNUC_MINOR__ >= 95))
-    #define LIBPROTO(name, ret, ...)                                  \
-      LIBFUNC ret LIBSTUB_##name(void);                               \
-      LIBFUNC ret LIB_##name(__VA_ARGS__)
+  #if (__STDC_VERSION__ >= 199901L || __GNUC__ >= 3 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 95))
+    #define LIBPROTO(name, ret, ...) LIBFUNC ret LIBSTUB_##name(void); LIBFUNC ret LIB_##name(__VA_ARGS__)
     #define LIBPROTOVA(name, ret, ...)
-    #define LIBSTUB(name, ret, ...)                                   \
-      LIBFUNC ret LIBSTUB_##name(void)
+    #define LIBSTUB(name, ret, ...) LIBFUNC ret LIBSTUB_##name(void)
     #define CALL_LFUNC_NP(name, ...) LIB_##name(__BASE_OR_IFACE_VAR)
     #define CALL_LFUNC(name, ...) LIB_##name(__BASE_OR_IFACE_VAR, __VA_ARGS__)
   #endif
@@ -173,11 +165,8 @@
   #define LFUNC(name)     LIBSTUB_##name
 #else
   #define LIBFUNC SAVEDS ASM
-  #if !defined(__cplusplus) &&                                        \
-    (__STDC_VERSION__ >= 199901L || __GNUC__ >= 3 ||                  \
-    (__GNUC__ == 2 && __GNUC_MINOR__ >= 95))
-    #define LIBPROTO(name, ret, ...)                                  \
-      LIBFUNC ret LIB_##name(__VA_ARGS__)
+  #if (__STDC_VERSION__ >= 199901L || __GNUC__ >= 3 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 95))
+    #define LIBPROTO(name, ret, ...) LIBFUNC ret LIB_##name(__VA_ARGS__)
     #define LIBPROTOVA(name, ret, ...)
     #define LIBSTUB(name, ret, ...)
     #define CALL_LFUNC_NP(name, ...) LIB_##name(__BASE_OR_IFACE_VAR)
