@@ -4,7 +4,7 @@
 /* Includeheader
 
         Name:           SDI_compiler.h
-        Versionstring:  $VER: SDI_compiler.h 1.36 (30.03.2015)
+        Versionstring:  $VER: SDI_compiler.h 1.37 (18.02.2016)
         Authors:        Dirk Stoecker, Jens Maus
         Distribution:   PD
         Project page:   https://github.com/adtools/SDI
@@ -61,6 +61,8 @@
  1.35  03.03.11 : fixed AROS macros for m68k (Jason McMullan)
  1.36  30.03.15 : changed FAR define to only define it empty in case __far does not
                   exist (Gunther Nikl)
+ 1.37  18.02.16 : changed INLINE define to not include "static" but use a separate STATIC
+                  define (Jens Maus)
 
 */
 
@@ -88,6 +90,7 @@
 #undef CONST
 #undef SAVEDS
 #undef INLINE
+#undef STATIC
 #undef REGARGS
 #undef STDARGS
 #undef OFFSET
@@ -113,7 +116,7 @@
   #define STDARGS
   #define STACKEXT
   #define REGARGS
-  #define INLINE static
+  #define INLINE
   #define OFFSET(p,m) __offsetof(struct p,m)
 
   #if defined(__PPC__)
@@ -127,7 +130,7 @@
   #define STDARGS
   #define STACKEXT
   #define REGARGS
-  #define INLINE inline
+  #define INLINE
 /*************************************************************************/
 #elif defined(__SASC)
   #define ASM __asm
@@ -138,7 +141,7 @@
   #define DEPRECATED __attribute__((deprecated))
   #if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ > 0)
     #define USED_VAR USED /* for variables only! */
-    #define INLINE static __inline __attribute__((always_inline))
+    #define INLINE __inline __attribute__((always_inline))
   #endif
   /* we have to distinguish between AmigaOS4 and MorphOS */
   #if (defined(_M68000) || defined(__M68000) || defined(__mc68000)) && !defined(__AROS__)
@@ -167,7 +170,7 @@
   #define REG(reg,arg) __##reg arg
   #define STACKEXT __stkcheck
   #define STDARGS __stkargs
-  #define INLINE static
+  #define INLINE
 #endif
 
 /* then "common" ones */
@@ -188,7 +191,10 @@
   #define SAVEDS __saveds
 #endif
 #if !defined(INLINE)
-  #define INLINE static __inline
+  #define INLINE __inline
+#endif
+#if !defined(STATIC)
+  #define STATIC static
 #endif
 #if !defined(REGARGS)
   #define REGARGS __regargs
