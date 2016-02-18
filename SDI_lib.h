@@ -4,7 +4,7 @@
 /* Includeheader
 
         Name:           SDI_lib.h
-        Versionstring:  $VER: SDI_lib.h 1.13 (28.09.2015)
+        Versionstring:  $VER: SDI_lib.h 1.14 (18.02.2016)
         Author:         Jens Maus
         Distribution:   PD
         Project page:   https://github.com/adtools/SDI
@@ -41,7 +41,9 @@
                   version (Thore Böckelmann)
  1.12  01.04.14 : removed the necessity of stub functions for AmigaOS4 (Thore
                   Böckelmann)
- 1.13  28.09.15 : removed the exclusion of C++
+ 1.13  28.09.15 : removed the exclusion of C++ (Thore Böckelmann)
+ 1.14  18.02.16 : added LFUNC_NULL (Jens Maus)
+
 */
 
 /*
@@ -148,6 +150,7 @@
   #define LFUNC_VAS(name) LIB_##name
   #define LFUNC_FA_(name) ,LIB_##name
   #define LFUNC_VA_(name) ,LIB_##name
+  #define LFUNC_NULL      ,NULL
   #define LFUNC(name)     LIB_##name
 #elif defined(__MORPHOS__)
   #define LIBFUNC
@@ -162,6 +165,7 @@
   #define LFUNC_VAS(name)
   #define LFUNC_FA_(name) ,LIBSTUB_##name
   #define LFUNC_VA_(name)
+  #define LFUNC_NULL      ,NULL
   #define LFUNC(name)     LIBSTUB_##name
 #else
   #define LIBFUNC SAVEDS ASM
@@ -176,6 +180,7 @@
   #define LFUNC_VAS(name)
   #define LFUNC_FA_(name) ,LIB_##name
   #define LFUNC_VA_(name)
+  #define LFUNC_NULL      ,NULL
   #define LFUNC(name)     LIB_##name
 #endif
 
