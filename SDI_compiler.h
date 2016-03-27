@@ -4,7 +4,7 @@
 /* Includeheader
 
         Name:           SDI_compiler.h
-        Versionstring:  $VER: SDI_compiler.h 1.37 (18.02.2016)
+        Versionstring:  $VER: SDI_compiler.h 1.38 (27.03.2016)
         Authors:        Dirk Stoecker, Jens Maus
         Distribution:   PD
         Project page:   https://github.com/adtools/SDI
@@ -63,6 +63,7 @@
                   exist (Gunther Nikl)
  1.37  18.02.16 : changed INLINE define to not include "static" but use a separate STATIC
                   define (Jens Maus)
+ 1.38  27.03.16 : when using GCC4 for MorphOS compiles VARARGS68K is not supported (Jens Maus)
 
 */
 
@@ -153,7 +154,7 @@
     #define STDARGS
     #define REGARGS
     #define STACKEXT
-    #if defined(__MORPHOS__)
+    #if defined(__MORPHOS__) && __GNUC__ != 4
       #define VARARGS68K __attribute__((varargs68k))
     #endif
     #if defined(__AROS__)
